@@ -11,12 +11,8 @@ env/
 .DS_Store
 Thumbs.db
 
-data/
-docs/
-static/
-templates/
 *.pdf
 render.yaml
-data/cleaned_dataset.xlsx
+
 how to.txt
 team_uploads/
