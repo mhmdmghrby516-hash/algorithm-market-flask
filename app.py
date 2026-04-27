@@ -22,6 +22,51 @@ PROJECT_REFERENCE = {
 user_carts: dict[int, dict[int, int]] = {}
 user_ratings: dict[int, dict[int, int]] = {}
 
+PRODUCT_IMAGE_LIBRARY: dict[str, list[str]] = {
+    "Clothes": [
+        "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=80",
+    ],
+    "Electronics": [
+        "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=900&q=80",
+    ],
+    "Perfumes": [
+        "https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1615634260167-c8cdede054de?auto=format&fit=crop&w=900&q=80",
+    ],
+    "Sports": [
+        "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=900&q=80",
+    ],
+    "Books": [
+        "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=900&q=80",
+    ],
+    "Home Appliances": [
+        "https://images.unsplash.com/photo-1586208958839-06c17cacdf08?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1600566752355-35792bedcfea?auto=format&fit=crop&w=900&q=80",
+    ],
+    "Toys": [
+        "https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1558060370-d644479cb6f7?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&w=900&q=80",
+    ],
+}
+
+
+def product_image_url(category: str, product_id: int) -> str:
+    options = PRODUCT_IMAGE_LIBRARY.get(category)
+    if not options:
+        options = PRODUCT_IMAGE_LIBRARY["Clothes"]
+    return options[int(product_id) % len(options)]
+
 
 def load_evaluation_summary() -> dict:
     path = Path("docs/evaluation_summary.json")
@@ -98,13 +143,24 @@ def parse_ga_settings() -> dict[str, int | float]:
     return settings
 
 
+@app.context_processor
+def inject_template_helpers() -> dict[str, object]:
+    return {"product_image_url": product_image_url}
+
+
 @app.route("/")
 def index():
     user_id = current_user_id()
+    initial_recommendations = (
+        recommender.compare_recommendations(user_id, ga_overrides=parse_ga_settings())
+        if user_id is not None
+        else None
+    )
     return render_template(
         "index.html",
         logged_in=user_id is not None,
         user_id=user_id,
+        initial_recommendations=initial_recommendations,
         dataset_summary=recommender.dataset_summary(),
         evaluation_summary=load_evaluation_summary(),
         sample_users=recommender.sample_user_ids(),
