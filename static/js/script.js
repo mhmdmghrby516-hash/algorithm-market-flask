@@ -33,17 +33,45 @@ function getCurrentUserId() {
 }
 
 function getProductImage(productId, category) {
-    const seeds = {
-        Toys: "toy",
-        Books: "book",
-        Electronics: "electronics",
-        Clothes: "fashion",
-        "Home Appliances": "home",
-        Sports: "sports",
-        Perfumes: "perfume"
+    const imageLibrary = {
+        Clothes: [
+            "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=80"
+        ],
+        Electronics: [
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=900&q=80"
+        ],
+        Perfumes: [
+            "https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1615634260167-c8cdede054de?auto=format&fit=crop&w=900&q=80"
+        ],
+        Sports: [
+            "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=900&q=80"
+        ],
+        Books: [
+            "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=900&q=80"
+        ],
+        "Home Appliances": [
+            "https://images.unsplash.com/photo-1586208958839-06c17cacdf08?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1600566752355-35792bedcfea?auto=format&fit=crop&w=900&q=80"
+        ],
+        Toys: [
+            "https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1558060370-d644479cb6f7?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&w=900&q=80"
+        ]
     };
-    const seed = seeds[category] || `product-${productId}`;
-    return `https://picsum.photos/seed/${seed}-${productId}/300/200`;
+    const options = imageLibrary[category] || imageLibrary.Clothes;
+    return options[productId % options.length];
 }
 
 function escapeHtml(value) {
@@ -139,6 +167,11 @@ async function syncCart(productId, quantity = 1, method = "POST") {
 }
 
 function addToCart(product) {
+    if (!isLoggedIn()) {
+        window.location.href = "/login";
+        return;
+    }
+
     const existing = cart.find((item) => item.product_id === product.product_id);
     if (existing) {
         existing.quantity += 1;
@@ -348,7 +381,7 @@ function buildProductCard(product, index, variant) {
         : `<p class="product-reason muted-copy">Featured for browsing.</p>`;
     const scoreBlock = product.score !== undefined
         ? `<div class="product-score"><span>${variant}</span><strong>${Number(product.score).toFixed(4)}</strong></div>`
-        : "";
+        : `<div class="product-score"><span>${variant}</span><strong>N/A</strong></div>`;
     return `
         <article class="product-card ${variant === "Optimized" ? "optimized-card" : ""}" data-product-id="${product.product_id}" data-category="${escapeHtml(product.category)}">
             <img class="product-image" src="${imageUrl}" alt="${escapeHtml(product.name)}" loading="lazy">
@@ -356,12 +389,19 @@ function buildProductCard(product, index, variant) {
             <h3>${escapeHtml(product.name)}</h3>
             <div class="product-category"><i class="fas fa-tag"></i> ${escapeHtml(product.category)}</div>
             <div class="product-price">$${Number(product.price).toFixed(2)}</div>
-            ${scoreBlock}
-            <div class="product-rating">${renderRatingStars(product.product_id, product.avg_rating || 3)}</div>
-            ${reasonBlock}
-            <button class="add-to-cart-btn" type="button" data-product='${JSON.stringify(product).replace(/'/g, "&#39;")}'>
-                <i class="fas fa-cart-plus"></i> Add to cart
-            </button>
+            <div class="product-actions">
+                <button class="view-details-btn" type="button">
+                    <i class="fas fa-eye"></i> View
+                </button>
+                <button class="add-to-cart-btn" type="button" data-product='${JSON.stringify(product).replace(/'/g, "&#39;")}'>
+                    <i class="fas fa-cart-plus"></i> Add to cart
+                </button>
+            </div>
+            <div class="product-details">
+                ${scoreBlock}
+                <div class="product-rating">${renderRatingStars(product.product_id, product.avg_rating || 3)}</div>
+                ${reasonBlock}
+            </div>
         </article>
     `;
 }
@@ -375,6 +415,19 @@ function attachAddToCartHandlers(container) {
     });
 }
 
+function attachViewDetailsHandlers(container) {
+    container.querySelectorAll(".view-details-btn").forEach((button) => {
+        button.addEventListener("click", () => {
+            const card = button.closest(".product-card");
+            if (!card) return;
+            const expanded = card.classList.toggle("details-open");
+            button.innerHTML = expanded
+                ? `<i class="fas fa-eye-slash"></i> Hide`
+                : `<i class="fas fa-eye"></i> View`;
+        });
+    });
+}
+
 function renderProductCollection(products, containerId, variant) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -384,6 +437,7 @@ function renderProductCollection(products, containerId, variant) {
     }
     container.innerHTML = products.map((product, index) => buildProductCard(product, index, variant)).join("");
     attachAddToCartHandlers(container);
+    attachViewDetailsHandlers(container);
 }
 
 function populateCategoryFilter(products) {
@@ -581,6 +635,8 @@ document.addEventListener("DOMContentLoaded", () => {
     loadCart();
     loadRatings();
     setupCartIcon();
+    attachAddToCartHandlers(document);
+    attachViewDetailsHandlers(document);
     bindRatingEvents();
     setupFilterHandlers();
     setupQuickUsers();
