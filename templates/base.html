@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}M-Store{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body data-logged-in="{{ 'true' if logged_in else 'false' }}" data-user-id="{{ user_id if logged_in else '' }}">
+    <div class="promo-strip">
+        <div class="container promo-strip-inner">
+            <span><i class="fas fa-bolt"></i> عروض يومية متجددة</span>
+            <span><i class="fas fa-truck-fast"></i> شحن سريع للطلبات المؤهلة</span>
+            <span><i class="fas fa-shield-heart"></i> تجربة تسوق آمنة وسهلة</span>
+        </div>
+    </div>
+
+    <header class="main-header">
+        <div class="container header-shell">
+            <div class="header-top">
+                <a href="/" class="brand-mark">
+                    <span class="brand-badge"><i class="fas fa-bag-shopping"></i></span>
+                    <span class="brand-copy">
+                        <strong>M-Store</strong>
+                        <small>Fashion, tech and lifestyle picks</small>
+                    </span>
+                </a>
+
+                <form class="search-bar" action="/search" method="GET">
+                    <button type="submit" aria-label="بحث"><i class="fas fa-search"></i></button>
+                    <input type="text" name="q" placeholder="ابحث عن منتج، فئة، أو رقم منتج" aria-label="Search products">
+                </form>
+
+                <div class="header-actions">
+                    {% if logged_in %}
+                        <span class="user-greeting"><i class="fas fa-user"></i> المستخدم {{ user_id }}</span>
+                        <a href="/logout" class="header-action ghost-link"><i class="fas fa-right-from-bracket"></i> خروج</a>
+                    {% else %}
+                        <a href="/login" class="header-action solid-link"><i class="fas fa-user-check"></i> تسجيل الدخول</a>
+                    {% endif %}
+                    <a href="#" id="cartIcon" class="header-action cart-icon">
+                        <i class="fas fa-cart-shopping"></i>
+                        <span>السلة</span>
+                        <span id="cartCount" class="cart-count">0</span>
+                    </a>
+                </div>
+
+                <button class="mobile-menu-btn" type="button" aria-label="القائمة">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <nav class="nav-links">
+                <a href="/"><i class="fas fa-house"></i> الرئيسية</a>
+                <a href="/about"><i class="fas fa-sparkles"></i> من نحن</a>
+                <a href="/contact"><i class="fas fa-headset"></i> تواصل معنا</a>
+                <a href="/search?q=Clothes"><i class="fas fa-shirt"></i> الموضة</a>
+                <a href="/search?q=Electronics"><i class="fas fa-mobile-screen"></i> الإلكترونيات</a>
+                <a href="/search?q=Perfumes"><i class="fas fa-wand-magic-sparkles"></i> العطور</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="main-footer">
+        <div class="container footer-grid">
+            <section>
+                <h4>M-Store</h4>
+                <p>واجهة تسوق حديثة تجمع بين الأزياء، التقنية، ومنتجات الحياة اليومية بتجربة منظمة وواضحة.</p>
+            </section>
+            <section>
+                <h4>خدماتنا</h4>
+                <a href="/search?q=Clothes">أحدث الصيحات</a>
+                <a href="/search?q=Electronics">عروض التقنية</a>
+                <a href="/contact">خدمة العملاء</a>
+            </section>
+            <section>
+                <h4>التجربة</h4>
+                <p>توصيات مخصصة</p>
+                <p>مقارنة ذكية للمنتجات</p>
+                <p>تقييمات وحفظ للسلة</p>
+            </section>
+            <section>
+                <h4>تابعنا</h4>
+                <a href="https://instagram.com/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i> Instagram</a>
+                <a href="https://wa.me/" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                <a href="https://t.me/" target="_blank" rel="noopener noreferrer"><i class="fab fa-telegram"></i> Telegram</a>
+                <a href="https://facebook.com/" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook"></i> Facebook</a>
+            </section>
+        </div>
+        <div class="container footer-bottom">
+            <p>© 2026 M-Store. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
