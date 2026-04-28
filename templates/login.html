@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}تسجيل الدخول | M-Store{% endblock %}
+
+{% block content %}
+<section class="login-stage">
+    <div class="container login-grid">
+        <div class="login-copy">
+            <span class="eyebrow">Personalized shopping</span>
+            <h1>ادخل بحساب تجريبي لمشاهدة التوصيات الذكية.</h1>
+            <p>اختيار المستخدم يفعّل مقارنة احترافية بين المنتجات الأساسية والاقتراحات المحسّنة داخل الواجهة.</p>
+            <div class="mini-stats">
+                <div><span>توصيات</span><strong>مخصصة</strong></div>
+                <div><span>مقارنة</span><strong>مباشرة</strong></div>
+                <div><span>فئات</span><strong>متعددة</strong></div>
+                <div><span>واجهة</span><strong>Retail style</strong></div>
+            </div>
+        </div>
+
+        <div class="login-card">
+            <h2><i class="fas fa-user-check"></i> اختيار المستخدم</h2>
+            <p class="demo-note">اختار أي مستخدم من البيانات لعرض تجربة التوصيات.</p>
+            {% if error %}
+                <div class="error-message">{{ error }}</div>
+            {% endif %}
+            <form method="POST" action="/login">
+                <div class="input-group">
+                    <label for="user_id">User ID</label>
+                    <select name="user_id" id="user_id" class="user-dropdown" required>
+                        <option value="">-- Select user --</option>
+                        {% for uid in users %}
+                            <option value="{{ uid }}">User {{ uid }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary full-width-btn">دخول</button>
+            </form>
+            <div class="quick-users quick-users-login">
+                <span class="quick-users-label">اقتراحات سريعة:</span>
+                {% for uid in sample_users %}
+                    <button class="quick-user-chip quick-user" type="button" data-user-id="{{ uid }}">{{ uid }}</button>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

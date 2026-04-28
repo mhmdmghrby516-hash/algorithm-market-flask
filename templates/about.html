@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}من نحن | M-Store{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <div class="page-card">
+            <span class="eyebrow">About the brand</span>
+            <h1>نبني واجهة متجر واضحة، أنيقة، وسهلة التصفح.</h1>
+            <p>يركز M-Store على تقديم تجربة عرض منتجات أكثر تنظيماً مع لمسة تجارية حديثة تشبه المتاجر الكبيرة من حيث الوضوح والإيقاع البصري.</p>
+        </div>
+    </div>
+</section>
+
+<section class="content-section">
+    <div class="container info-grid">
+        <article class="feature-panel">
+            <div class="section-head">
+                <h2>رؤيتنا</h2>
+                <p>تحويل عرض البيانات والمنتجات إلى تجربة تسوق تبدو احترافية ومقنعة للمستخدم النهائي، مع اعتماد تصميم يركز على الفئات والعروض والمنتجات الموصى بها.</p>
+            </div>
+        </article>
+        <article class="feature-panel">
+            <div class="section-head">
+                <h2>أرقام سريعة</h2>
+            </div>
+            <div class="mini-stats">
+                <div><span>منتجات</span><strong>{{ dataset_summary.products }}</strong></div>
+                <div><span>مستخدمون</span><strong>{{ dataset_summary.users }}</strong></div>
+                <div><span>تقييمات</span><strong>{{ dataset_summary.ratings_after_cleaning }}</strong></div>
+                <div><span>تنوع الفئات</span><strong>{{ dataset_summary.categories|length }}</strong></div>
+            </div>
+        </article>
+    </div>
+</section>
+{% endblock %}
