@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block title %}M-Store | واجهة تسوق احترافية{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container hero-layout">
+        <div class="hero-copy">
+            <span class="eyebrow">New season, curated style</span>
+            <h1>تسوق واجهة أنيقة تجمع أحدث المنتجات والعروض اليومية في مكان واحد.</h1>
+            <p class="hero-text">
+                استكشف تجربة أقرب إلى المتاجر العالمية: تنظيم واضح، بطاقات منتجات أنيقة، توصيات ذكية، وتصميم يبرز العروض والفئات بطريقة احترافية.
+            </p>
+            <div class="hero-actions">
+                {% if logged_in %}
+                    <a href="#recommendations" class="btn-primary">شاهد توصياتك</a>
+                {% else %}
+                    <a href="/login" class="btn-primary">ابدأ التسوق</a>
+                {% endif %}
+                <a href="/search?q=Clothes" class="btn-secondary">تصفح الفئات</a>
+            </div>
+            <div class="hero-highlights">
+                <span><strong>{{ dataset_summary.products }}</strong> منتج</span>
+                <span><strong>{{ dataset_summary.categories|length }}</strong> فئات</span>
+                <span><strong>{{ dataset_summary.users }}</strong> مستخدم</span>
+            </div>
+        </div>
+
+        <aside class="hero-showcase">
+            <div class="showcase-card dark-card">
+                <span>Weekend edit</span>
+                <strong>خصومات تصل إلى 40%</strong>
+                <p>على الموضة، العطور، والإكسسوارات الأكثر تصفحاً هذا الأسبوع.</p>
+            </div>
+            <div class="showcase-grid">
+                <div class="showcase-card light-card">
+                    <span>Fast delivery</span>
+                    <strong>خلال 24-72 ساعة</strong>
+                </div>
+                <div class="showcase-card sale-card">
+                    <span>Best rated</span>
+                    <strong>{{ dataset_summary.ratings_after_cleaning }}</strong>
+                </div>
+                <div class="showcase-card light-card">
+                    <span>Secure checkout</span>
+                    <strong>دفع آمن</strong>
+                </div>
+                <div class="showcase-card light-card">
+                    <span>Returns</span>
+                    <strong>استبدال مرن</strong>
+                </div>
+            </div>
+        </aside>
+    </div>
+</section>
+
+<section class="category-strip">
+    <div class="container category-grid">
+        <a class="category-card" href="/search?q=Clothes"><i class="fas fa-shirt"></i><span>الموضة</span></a>
+        <a class="category-card" href="/search?q=Electronics"><i class="fas fa-headphones"></i><span>الإلكترونيات</span></a>
+        <a class="category-card" href="/search?q=Perfumes"><i class="fas fa-spray-can-sparkles"></i><span>العطور</span></a>
+        <a class="category-card" href="/search?q=Sports"><i class="fas fa-dumbbell"></i><span>الرياضة</span></a>
+        <a class="category-card" href="/search?q=Books"><i class="fas fa-book-open"></i><span>الكتب</span></a>
+        <a class="category-card" href="/search?q=Home Appliances"><i class="fas fa-house"></i><span>المنزل</span></a>
+    </div>
+</section>
+
+<section class="recommendation-shell" id="recommendations">
+    <div class="container stack-layout">
+        {% if logged_in %}
+        <section class="collection-card">
+            <div class="comparison-layout">
+                <section class="comparison-panel">
+                    <div class="section-head tight">
+                        <h3>المنتجات الرائجة</h3>
+                    </div>
+                    <div id="baselineGrid" class="products-grid comparison-grid">
+                        {% if initial_recommendations %}
+                            {% for product in initial_recommendations.baseline %}
+                                <article class="product-card" data-product-id="{{ product.product_id }}" data-category="{{ product.category }}">
+                                    <img class="product-image" src="{{ product_image_url(product.category, product.product_id) }}" alt="{{ product.name }}" loading="lazy">
+                                    <div class="product-badge">#{{ loop.index }}</div>
+                                    <h3>{{ product.name }}</h3>
+                                    <div class="product-category"><i class="fas fa-tag"></i> {{ product.category }}</div>
+                                    <div class="product-price">${{ "%.2f"|format(product.price) }}</div>
+                                    <div class="product-actions">
+                                        <button class="view-details-btn" type="button"><i class="fas fa-eye"></i> View</button>
+                                        <button
+                                            class="add-to-cart-btn"
+                                            type="button"
+                                            data-product='{{ {
+                                                "product_id": product.product_id,
+                                                "name": product.name,
+                                                "price": product.price,
+                                                "category": product.category,
+                                                "avg_rating": product.avg_rating,
+                                                "score": product.score,
+                                                "reason": product.reason
+                                            } | tojson | forceescape }}'>
+                                            <i class="fas fa-cart-plus"></i>Add to Cart
+                                        </button>
+                                    </div>
+                                    <div class="product-details">
+                                        <div class="product-score"><span>Baseline</span><strong>{{ "%.4f"|format(product.score) }}</strong></div>
+                                        <div class="product-rating"><span class="avg-rating">التقييم {{ "%.1f"|format(product.avg_rating) }}</span></div>
+                                        <p class="product-reason">{{ product.reason }}</p>
+                                    </div>
+                                </article>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </section>
+                <section class="comparison-panel highlight-panel">
+                    <div class="section-head tight">
+                        <h3>مخصصة لك</h3>
+                    </div>
+                    <div id="optimizedGrid" class="products-grid comparison-grid">
+                        {% if initial_recommendations %}
+                            {% for product in initial_recommendations.optimized %}
+                                <article class="product-card optimized-card" data-product-id="{{ product.product_id }}" data-category="{{ product.category }}">
+                                    <img class="product-image" src="{{ product_image_url(product.category, product.product_id) }}" alt="{{ product.name }}" loading="lazy">
+                                    <div class="product-badge">#{{ loop.index }}</div>
+                                    <h3>{{ product.name }}</h3>
+                                    <div class="product-category"><i class="fas fa-tag"></i> {{ product.category }}</div>
+                                    <div class="product-price">${{ "%.2f"|format(product.price) }}</div>
+                                    <div class="product-actions">
+                                        <button class="view-details-btn" type="button"><i class="fas fa-eye"></i> View</button>
+                                        <button
+                                            class="add-to-cart-btn"
+                                            type="button"
+                                            data-product='{{ {
+                                                "product_id": product.product_id,
+                                                "name": product.name,
+                                                "price": product.price,
+                                                "category": product.category,
+                                                "avg_rating": product.avg_rating,
+                                                "score": product.score,
+                                                "reason": product.reason
+                                            } | tojson | forceescape }}'>
+                                            <i class="fas fa-cart-plus"></i>Add to Cart
+                                        </button>
+                                    </div>
+                                    <div class="product-details">
+                                        <div class="product-score"><span>Optimized</span><strong>{{ "%.4f"|format(product.score) }}</strong></div>
+                                        <div class="product-rating"><span class="avg-rating">التقييم {{ "%.1f"|format(product.avg_rating) }}</span></div>
+                                        <p class="product-reason">{{ product.reason }}</p>
+                                    </div>
+                                </article>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </section>
+            </div>
+        </section>
+
+        <section class="collection-card ga-history-panel">
+            <div class="section-head">
+                <h2>أداء التحسين</h2>
+                <p>عرض بصري مبسط لتطور أفضل قيمة ومتوسط الأداء عبر الأجيال.</p>
+            </div>
+            <div class="result-meta ga-summary-grid">
+                <div class="stat-card"><span class="stat-label">أفضل قيمة</span><span id="gaBestFitness" class="stat-value">{{ "%.4f"|format(initial_recommendations.best_fitness) if initial_recommendations else "-" }}</span></div>
+                <div class="stat-card"><span class="stat-label">الأجيال</span><span id="gaGenerationsUsed" class="stat-value">{{ initial_recommendations.ga_settings.generations if initial_recommendations else "-" }}</span></div>
+                <div class="stat-card"><span class="stat-label">الحجم السكاني</span><span id="gaPopulationUsed" class="stat-value">{{ initial_recommendations.ga_settings.population_size if initial_recommendations else "-" }}</span></div>
+                <div class="stat-card"><span class="stat-label">معدل الطفرة</span><span id="gaMutationUsed" class="stat-value">{{ "%.2f"|format(initial_recommendations.ga_settings.mutation_rate) if initial_recommendations else "-" }}</span></div>
+            </div>
+            <div id="gaHistoryChart" class="ga-history-chart">
+                {% if initial_recommendations and initial_recommendations.ga_trace %}
+                    {% set max_fitness = initial_recommendations.ga_trace | map(attribute='best_fitness') | max %}
+                    {% for point in initial_recommendations.ga_trace %}
+                        <div class="ga-bar-row">
+                            <span class="ga-gen">{{ point.generation|int }}</span>
+                            <div class="ga-bar-wrap">
+                                <div class="ga-bar mean" style="width: {{ (point.mean_fitness / max_fitness * 100) if max_fitness else 0 }}%;" title="mean {{ '%.4f'|format(point.mean_fitness) }}"></div>
+                                <div class="ga-bar best" style="width: {{ (point.best_fitness / max_fitness * 100) if max_fitness else 0 }}%;" title="best {{ '%.4f'|format(point.best_fitness) }}"></div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="chart-empty">سيظهر الرسم بعد تحميل التوصيات.</p>
+                {% endif %}
+            </div>
+            <p class="chart-legend">
+                <span class="swatch best"></span>أفضل أداء
+                <span class="swatch mean"></span>متوسط الأداء
+            </p>
+        </section>
+        {% else %}
+        <section class="collection-card">
+            <div class="section-head">
+                <h2>منتجات مختارة للزوار</h2>
+                <p>عرض تجريبي منسق يعكس شكل بطاقات المنتجات داخل واجهة متجر حديثة.</p>
+            </div>
+            <div class="control-row">
+                <div class="filter-group">
+                    <label for="categoryFilter">تصفية حسب الفئة</label>
+                    <select id="categoryFilter" class="category-filter">
+                        <option value="all">كل الفئات</option>
+                    </select>
+                </div>
+                <button id="resetFilter" class="reset-filter" type="button"><i class="fas fa-rotate"></i> إعادة التصفية</button>
+            </div>
+            <div id="randomProductsGrid" class="products-grid"></div>
+            <div class="login-prompt">
+                <a href="/login" class="btn-primary">سجل الدخول لرؤية توصيات مخصصة</a>
+            </div>
+        </section>
+        {% endif %}
+    </div>
+</section>
+
+<section class="service-band">
+    <div class="container service-grid">
+        <article>
+            <i class="fas fa-box-open"></i>
+            <h3>تغليف مرتب</h3>
+            <p>بطاقات وعناصر بصرية أوضح تجعل كل منتج أكثر قابلية للمقارنة.</p>
+        </article>
+        <article>
+            <i class="fas fa-credit-card"></i>
+            <h3>ثقة أعلى</h3>
+            <p>هياكل عرض واضحة للعروض، السلة، والتوصيات داخل نفس التجربة.</p>
+        </article>
+        <article>
+            <i class="fas fa-heart"></i>
+            <h3>تجربة ممتعة</h3>
+            <p>واجهة أخف بصرياً وأكثر قرباً لأسلوب المتاجر العالمية الحديثة.</p>
+        </article>
+    </div>
+</section>
+{% endblock %}

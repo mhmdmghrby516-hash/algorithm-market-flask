@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}نتائج البحث | M-Store{% endblock %}
+
+{% block content %}
+<section class="page-hero compact-page-hero">
+    <div class="container">
+        <div class="page-card">
+            <span class="eyebrow">Search</span>
+            <h1>نتائج البحث</h1>
+            {% if query %}
+                <p>هذه المنتجات المطابقة لعبارة <strong>{{ query }}</strong>.</p>
+            {% else %}
+                <p>استخدم شريط البحث في الأعلى للعثور على منتج أو فئة بسرعة.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<section class="content-section">
+    <div class="container">
+        {% if results %}
+            <div class="products-grid">
+                {% for product in results %}
+                    <article class="product-card" data-category="{{ product.category }}">
+                        <img class="product-image" src="{{ product_image_url(product.category, product.product_id) }}" alt="{{ product.name }}" loading="lazy">
+                        <div class="product-badge">#{{ product.product_id }}</div>
+                        <h3>{{ product.name }}</h3>
+                        <div class="product-category"><i class="fas fa-tag"></i> {{ product.category }}</div>
+                        <div class="product-price">${{ "%.2f"|format(product.price) }}</div>
+                        <div class="product-actions">
+                            <button class="view-details-btn" type="button"><i class="fas fa-eye"></i> View</button>
+                            <button
+                                class="add-to-cart-btn"
+                                type="button"
+                                data-product='{{ {
+                                    "product_id": product.product_id,
+                                    "name": product.name,
+                                    "price": product.price,
+                                    "category": product.category,
+                                    "avg_rating": product.avg_rating
+                                } | tojson | forceescape }}'>
+                                <i class="fas fa-cart-plus"></i>Add to Cart
+                            </button>
+                        </div>
+                        <div class="product-details">
+                            <div class="product-score"><span>Search</span><strong>N/A</strong></div>
+                            <div class="product-rating"><span class="avg-rating">التقييم {{ "%.1f"|format(product.avg_rating) }}</span></div>
+                            <p class="product-reason">تم عرض هذا المنتج لأنه يطابق عبارة البحث التي أدخلتها.</p>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% elif query %}
+            <div class="empty-state-card">
+                <h2>لا توجد نتائج مطابقة</h2>
+                <p>جرّب البحث باسم فئة مثل <strong>Clothes</strong> أو <strong>Electronics</strong>.</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
