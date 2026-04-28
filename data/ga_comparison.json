@@ -1,0 +1,78 @@
+{
+  "1": {
+    "baseline_recs": [
+      173,
+      118,
+      198,
+      280,
+      473
+    ],
+    "optimized_recs": [
+      137,
+      118,
+      308,
+      347,
+      136
+    ],
+    "baseline_fitness": 184.92552853970176,
+    "optimized_fitness": 195.10874409929528,
+    "improvement": 10.18321555959352
+  },
+  "100": {
+    "baseline_recs": [
+      173,
+      410,
+      274,
+      196,
+      453
+    ],
+    "optimized_recs": [
+      173,
+      395,
+      274,
+      472,
+      190
+    ],
+    "baseline_fitness": 189.1878831161102,
+    "optimized_fitness": 193.985216925549,
+    "improvement": 4.797333809438783
+  },
+  "500": {
+    "baseline_recs": [
+      410,
+      491,
+      358,
+      260,
+      472
+    ],
+    "optimized_recs": [
+      410,
+      491,
+      360,
+      370,
+      169
+    ],
+    "baseline_fitness": 192.79340262420757,
+    "optimized_fitness": 194.3425622880731,
+    "improvement": 1.549159663865538
+  },
+  "1000": {
+    "baseline_recs": [
+      368,
+      410,
+      274,
+      358,
+      472
+    ],
+    "optimized_recs": [
+      368,
+      410,
+      323,
+      348,
+      54
+    ],
+    "baseline_fitness": 185.5119718309859,
+    "optimized_fitness": 190.31338028169014,
+    "improvement": 4.80140845070423
+  }
+}
