@@ -152,39 +152,6 @@
                 </section>
             </div>
         </section>
-
-        <section class="collection-card ga-history-panel">
-            <div class="section-head">
-                <h2>أداء التحسين</h2>
-                <p>عرض بصري مبسط لتطور أفضل قيمة ومتوسط الأداء عبر الأجيال.</p>
-            </div>
-            <div class="result-meta ga-summary-grid">
-                <div class="stat-card"><span class="stat-label">أفضل قيمة</span><span id="gaBestFitness" class="stat-value">{{ "%.4f"|format(initial_recommendations.best_fitness) if initial_recommendations else "-" }}</span></div>
-                <div class="stat-card"><span class="stat-label">الأجيال</span><span id="gaGenerationsUsed" class="stat-value">{{ initial_recommendations.ga_settings.generations if initial_recommendations else "-" }}</span></div>
-                <div class="stat-card"><span class="stat-label">الحجم السكاني</span><span id="gaPopulationUsed" class="stat-value">{{ initial_recommendations.ga_settings.population_size if initial_recommendations else "-" }}</span></div>
-                <div class="stat-card"><span class="stat-label">معدل الطفرة</span><span id="gaMutationUsed" class="stat-value">{{ "%.2f"|format(initial_recommendations.ga_settings.mutation_rate) if initial_recommendations else "-" }}</span></div>
-            </div>
-            <div id="gaHistoryChart" class="ga-history-chart">
-                {% if initial_recommendations and initial_recommendations.ga_trace %}
-                    {% set max_fitness = initial_recommendations.ga_trace | map(attribute='best_fitness') | max %}
-                    {% for point in initial_recommendations.ga_trace %}
-                        <div class="ga-bar-row">
-                            <span class="ga-gen">{{ point.generation|int }}</span>
-                            <div class="ga-bar-wrap">
-                                <div class="ga-bar mean" style="width: {{ (point.mean_fitness / max_fitness * 100) if max_fitness else 0 }}%;" title="mean {{ '%.4f'|format(point.mean_fitness) }}"></div>
-                                <div class="ga-bar best" style="width: {{ (point.best_fitness / max_fitness * 100) if max_fitness else 0 }}%;" title="best {{ '%.4f'|format(point.best_fitness) }}"></div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <p class="chart-empty">سيظهر الرسم بعد تحميل التوصيات.</p>
-                {% endif %}
-            </div>
-            <p class="chart-legend">
-                <span class="swatch best"></span>أفضل أداء
-                <span class="swatch mean"></span>متوسط الأداء
-            </p>
-        </section>
         {% else %}
         <section class="collection-card">
             <div class="section-head">
